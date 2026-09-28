@@ -1,0 +1,299 @@
+{
+  "history": [
+    {
+      "epoch": 1,
+      "time_s": 19.9,
+      "loss": 1.0921167314052582,
+      "adv_acc": 0.3794921875,
+      "eps255": 0.0
+    },
+    {
+      "epoch": 2,
+      "time_s": 19.4,
+      "loss": 1.0317762702703477,
+      "adv_acc": 0.53515625,
+      "eps255": 0.0
+    },
+    {
+      "epoch": 3,
+      "time_s": 19.8,
+      "loss": 0.8713747382164001,
+      "adv_acc": 0.6818359375,
+      "eps255": 0.0
+    },
+    {
+      "epoch": 4,
+      "time_s": 134.4,
+      "loss": 0.9970199480652809,
+      "adv_acc": 0.521484375,
+      "eps255": 1.333333333333334
+    },
+    {
+      "epoch": 5,
+      "time_s": 139.8,
+      "loss": 1.0752669870853424,
+      "adv_acc": 0.395703125,
+      "eps255": 2.666666666666668
+    },
+    {
+      "epoch": 6,
+      "time_s": 130.9,
+      "loss": 1.074370190501213,
+      "adv_acc": 0.419140625,
+      "eps255": 4.0
+    },
+    {
+      "epoch": 7,
+      "time_s": 137.4,
+      "loss": 1.0786565780639648,
+      "adv_acc": 0.3455078125,
+      "eps255": 5.333333333333336
+    },
+    {
+      "epoch": 8,
+      "time_s": 133.1,
+      "loss": 1.0931543439626694,
+      "adv_acc": 0.3580078125,
+      "eps255": 6.666666666666664
+    },
+    {
+      "epoch": 9,
+      "time_s": 138.1,
+      "loss": 1.092603290081024,
+      "adv_acc": 0.328515625,
+      "eps255": 8.0
+    },
+    {
+      "epoch": 10,
+      "time_s": 152.2,
+      "loss": 1.076198947429657,
+      "adv_acc": 0.3689453125,
+      "eps255": 8.0
+    },
+    {
+      "epoch": 11,
+      "time_s": 151.1,
+      "loss": 1.0618270218372345,
+      "adv_acc": 0.4265625,
+      "eps255": 8.0
+    },
+    {
+      "epoch": 12,
+      "time_s": 152.9,
+      "loss": 1.0341447189450264,
+      "adv_acc": 0.4232421875,
+      "eps255": 8.0
+    },
+    {
+      "epoch": 13,
+      "time_s": 155.5,
+      "loss": 1.025581294298172,
+      "adv_acc": 0.4236328125,
+      "eps255": 8.0
+    },
+    {
+      "epoch": 14,
+      "time_s": 160.5,
+      "loss": 1.0180927783250808,
+      "adv_acc": 0.4853515625,
+      "eps255": 8.0
+    },
+    {
+      "epoch": 15,
+      "time_s": 135.5,
+      "loss": 0.9843763619661331,
+      "adv_acc": 0.4787109375,
+      "eps255": 8.0
+    },
+    {
+      "epoch": 16,
+      "time_s": 158.7,
+      "loss": 0.9666185274720192,
+      "adv_acc": 0.4921875,
+      "eps255": 8.0
+    },
+    {
+      "epoch": 17,
+      "time_s": 178.9,
+      "loss": 0.947101628780365,
+      "adv_acc": 0.5197265625,
+      "eps255": 8.0
+    },
+    {
+      "epoch": 18,
+      "time_s": 170.4,
+      "loss": 0.9327515959739685,
+      "adv_acc": 0.5240234375,
+      "eps255": 8.0
+    },
+    {
+      "epoch": 19,
+      "time_s": 157.7,
+      "loss": 0.9196756884455681,
+      "adv_acc": 0.5244140625,
+      "eps255": 8.0
+    },
+    {
+      "epoch": 20,
+      "time_s": 128.4,
+      "loss": 0.916222782433033,
+      "adv_acc": 0.5021484375,
+      "eps255": 8.0
+    },
+    {
+      "epoch": 21,
+      "time_s": 118.9,
+      "loss": 0.9049757122993469,
+      "adv_acc": 0.5224609375,
+      "eps255": 8.0
+    },
+    {
+      "epoch": 22,
+      "time_s": 120.8,
+      "loss": 0.9081850305199624,
+      "adv_acc": 0.508203125,
+      "eps255": 8.0
+    },
+    {
+      "epoch": 23,
+      "time_s": 120.2,
+      "loss": 0.8999676212668419,
+      "adv_acc": 0.512890625,
+      "eps255": 8.0
+    },
+    {
+      "epoch": 24,
+      "time_s": 120.6,
+      "loss": 0.8964995935559272,
+      "adv_acc": 0.5146484375,
+      "eps255": 8.0
+    },
+    {
+      "epoch": 25,
+      "time_s": 122.4,
+      "loss": 0.8967295438051224,
+      "adv_acc": 0.5140625,
+      "eps255": 8.0
+    }
+  ],
+  "meta": {
+    "name": "AT",
+    "config": {
+      "data": {
+        "image_size": 64,
+        "n_train": 5000,
+        "n_test": 1000,
+        "n_test_aligned": 600,
+        "n_proto": 900,
+        "seed_train": 1001,
+        "seed_test": 1002,
+        "seed_test_aligned": 1003,
+        "seed_proto": 1004,
+        "size_range": [
+          8.0,
+          13.0
+        ],
+        "center_range": [
+          24.0,
+          40.0
+        ],
+        "aligned_center": 31.5,
+        "aligned_center_jitter": 1.5,
+        "aligned_rotation_jitter": 8.0,
+        "foreground_range": [
+          0.5,
+          0.72
+        ],
+        "background_range": [
+          0.22,
+          0.42
+        ],
+        "contrast_range": [
+          0.75,
+          1.25
+        ],
+        "brightness_range": [
+          -0.06,
+          0.06
+        ],
+        "noise_range": [
+          0.0,
+          0.03
+        ],
+        "texture_strength_range": [
+          0.0,
+          0.06
+        ],
+        "texture_freq_range": [
+          0.08,
+          0.2
+        ]
+      },
+      "pc": {
+        "nscale": 4,
+        "norient": 6,
+        "min_wavelength": 3.0,
+        "mult": 2.1,
+        "sigma_onf": 0.55,
+        "d_theta_on_sigma": 1.2,
+        "k": 2.0,
+        "cutoff": 0.5,
+        "g": 10.0,
+        "eps": 0.0001,
+        "softplus_beta_rel": 10.0,
+        "abs_delta": 0.0001,
+        "lowpass_cutoff": 0.45,
+        "lowpass_order": 15
+      },
+      "gm": {
+        "eps": 1e-06,
+        "sobel_scale": 0.125,
+        "padding": "replicate"
+      },
+      "train": {
+        "arch": "SmallCNN: fixed input affine (x-0.345)/0.107 -> [conv3x3-BN-ReLU]x2(16,32) -> maxpool2 -> conv3x3-BN-ReLU(64) -> maxpool2 -> conv3x3-BN-ReLU(64) -> global average pool -> linear(3)",
+        "optimizer": "Adam",
+        "lr": 0.001,
+        "weight_decay": 0.0,
+        "batch_size": 128,
+        "epochs": 20,
+        "lr_schedule": "cosine",
+        "model_seed": 0,
+        "at_eps": 0.03137254901960784,
+        "at_alpha": 0.00784313725490196,
+        "at_steps": 7,
+        "at_random_start": true,
+        "at_epochs": 25,
+        "at_clean_epochs": 3,
+        "at_eps_ramp_epochs": 6,
+        "at_attack_mode": "PGD examples generated with the model in eval mode (BN running statistics)",
+        "pag_lambda": 1.0,
+        "pag_target": "-(grad E_edge + grad E_contrast) wrt x, class-mean (centred/aligned) prototypes of TRUE class"
+      },
+      "eval": {
+        "pgd_eps": 0.03137254901960784,
+        "pgd_alpha": 0.00784313725490196,
+        "pgd_steps": 20,
+        "pgd_random_start": true,
+        "strong_pgd_eps": [
+          0.01568627450980392,
+          0.03137254901960784,
+          0.06274509803921569
+        ],
+        "strong_pgd_steps": 50,
+        "bootstrap_resamples": 10000,
+        "bootstrap_seed": 7,
+        "control_seed": 11,
+        "n_traj_per_class": 30,
+        "traj_steps": 11,
+        "flow_images_per_class": 4,
+        "flow_steps": 40,
+        "flow_eta": 0.1
+      },
+      "global_seed": 0,
+      "num_threads": 4,
+      "preprocessing": "grayscale float32 in [0,1], 64x64, no augmentation; images rendered from generative factors then clipped to [0,1]; inside the model a FIXED affine (x-0.345)/0.107 (training-set mean/std). Attacks, forces and gradients are all taken w.r.t. the [0,1] image. Per-image standardisation was rejected because it hard-codes contrast/offset invariance."
+    },
+    "train_time_s": 3179.0
+  }
+}

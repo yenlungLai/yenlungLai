@@ -60,16 +60,17 @@ def robust_accuracy(model, x, y, eps, alpha, steps, batch=250, seed=0):
     return correct / len(x)
 
 
-def train_model(loss_fn, x_train, y_train, cfg, name, extra_tensors=None, log_every=1):
+def train_model(loss_fn, x_train, y_train, cfg, name, extra_tensors=None, log_every=1, epochs=None):
     """Generic loop. loss_fn(model, xb, yb, extras_b, gen) -> (loss, dict_of_logged_scalars)."""
+    epochs = epochs or cfg.train.epochs
     torch.manual_seed(cfg.train.model_seed)
     model = SmallCNN()
     opt = torch.optim.Adam(model.parameters(), lr=cfg.train.lr, weight_decay=cfg.train.weight_decay)
     steps_per_epoch = (len(x_train) + cfg.train.batch_size - 1) // cfg.train.batch_size
-    sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=cfg.train.epochs * steps_per_epoch)
+    sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=epochs * steps_per_epoch)
     gen = torch.Generator().manual_seed(cfg.train.model_seed + 1)
     history = []
-    for ep in range(cfg.train.epochs):
+    for ep in range(epochs):
         loss_fn.epoch = ep
         model.train()
         perm = torch.randperm(len(x_train), generator=gen)

@@ -1,0 +1,3 @@
+model,clean_acc_test,pgd20_acc_test,clean_acc_test_aligned,pgd20_acc_test_aligned
+CE,0.996,0.0,0.9933333333333333,0.0
+AT,0.828,0.395,0.805,0.38

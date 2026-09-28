@@ -83,7 +83,9 @@
     "at_alpha": 0.00784313725490196,
     "at_steps": 7,
     "at_random_start": true,
-    "at_eps_warmup_epochs": 5,
+    "at_epochs": 25,
+    "at_clean_epochs": 3,
+    "at_eps_ramp_epochs": 6,
     "at_attack_mode": "PGD examples generated with the model in eval mode (BN running statistics)",
     "pag_lambda": 1.0,
     "pag_target": "-(grad E_edge + grad E_contrast) wrt x, class-mean (centred/aligned) prototypes of TRUE class"

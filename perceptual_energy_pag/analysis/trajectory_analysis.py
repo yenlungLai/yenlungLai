@@ -4,8 +4,10 @@ From the same x0:
     classifier ascent        x^f_{t+1} = x^f_t + eta * v / ||v||,          v = grad_x f_y
     perceptual-energy descent x^E_{t+1} = x^E_t - eta * grad E / ||grad E||,  E = E_edge + E_contrast
 Unclipped (pure flow in R^N, so the two fields are compared without projection effects).
-Per step: cos(grad f_y, -grad E_y) evaluated on BOTH paths, ||x^f_t - x^E_t||, and the normalised distance
-d_t / (eta t), which is 0 for identical paths, ~sqrt(2) for orthogonal straight paths and 2 for opposite ones.
+Per step: cos(grad f_y, -grad E_y) evaluated on BOTH paths, ||x^f_t - x^E_t||, and the displacement cosine
+cos(x^f_t - x0, x^E_t - x0) (1 same direction, 0 orthogonal, -1 opposite). The normalised distance d_t/(eta t) is
+also stored but is NOT comparable across models: a noisy gradient field makes the unit-step path wander, which
+shrinks its net displacement and hence d_t independently of any alignment.
 """
 import numpy as np
 import pandas as pd
@@ -55,11 +57,13 @@ def evaluate_paths(model, energy, pf, pe, y, eta, name):
             Ef = sum(energy.energies(xf, y))
             Ee = sum(energy.energies(xe, y))
         dist = (xf - xe).flatten(1).norm(dim=1)
+        cdisp = _cos(xf - pf[:, 0], xe - pe[:, 0]) if t > 0 else torch.full((B,), float("nan"))
         cf, ce = _cos(vf, gf), _cos(ve, ge)
         for b in range(B):
             rows.append({"model": name, "image": b, "label": int(y[b]), "step": t,
                          "cos_on_classifier_path": cf[b].item(), "cos_on_energy_path": ce[b].item(),
                          "dist": dist[b].item(), "norm_dist": dist[b].item() / (eta * t) if t > 0 else np.nan,
+                         "cos_displacement": cdisp[b].item(),
                          "f_y_classifier_path": lf[b, y[b]].item(), "f_y_energy_path": le[b, y[b]].item(),
                          "E_classifier_path": Ef[b].item(), "E_energy_path": Ee[b].item()})
     return pd.DataFrame(rows)

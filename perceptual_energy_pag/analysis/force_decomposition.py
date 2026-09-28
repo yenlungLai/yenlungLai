@@ -93,7 +93,12 @@ def perceptual_fields(energy, x, y, seed, batch=200):
         Ec_all.append(torch.cat(ec))
     gen = torch.Generator().manual_seed(seed)
     shape = x.shape
+    pcs, gms = [], []
+    for s in range(0, len(x), batch):
+        pcs.append(energy.pc(x[s:s + batch]))
+        gms.append(energy.gm(x[s:s + batch]))
     return {
+        "pc": torch.cat(pcs), "gm": torch.cat(gms),
         "ge": torch.stack(ge_all, 1), "gc": torch.stack(gc_all, 1),         # [B,C,1,H,W]
         "E_edge": torch.stack(Ee_all, 1), "E_contrast": torch.stack(Ec_all, 1),  # [B,C]
         "gpix": energy.get_pixel_force(x, y),
@@ -174,6 +179,18 @@ def decompose(model, fields, x, y, model_name, split, metas=None):
     G3 = torch.stack([ge, gc, gpix], 2)
     out["r2_ls_e_c_pix"] = fit_metrics(v, G3, lstsq(v, G3))[0]["r2"].numpy()
 
+    # --- post-hoc: spatial co-localisation (sign-agnostic). Does gradient MASS sit where the maps / forces are,
+    # regardless of direction? Baseline: the same maps from a different image (index shifted by one).
+    av = v.abs()
+    shift = torch.roll(ar, 1)
+    pcf, gmf = _flat(fields["pc"]), _flat(fields["gm"])
+    out["coloc_absv_pc"] = cos(av, pcf).numpy()
+    out["coloc_absv_gm"] = cos(av, gmf).numpy()
+    out["coloc_absv_absgsum"] = cos(av, gsum.abs()).numpy()
+    out["coloc_absv_pc_shuffled"] = cos(av, pcf[shift]).numpy()
+    out["coloc_absv_gm_shuffled"] = cos(av, gmf[shift]).numpy()
+    out["coloc_absv_const"] = cos(av, torch.ones_like(av)).numpy()  # = gradient spread (1/sqrt(N) .. 1)
+
     # --- local scaling beta (section 11): v ~ beta * g
     out["beta"] = ((v * gsum).sum(1) / ((gsum * gsum).sum(1) + EPS)).numpy()
     out["beta_e"] = ((v * ge).sum(1) / ((ge * ge).sum(1) + EPS)).numpy()
@@ -194,7 +211,8 @@ def decompose(model, fields, x, y, model_name, split, metas=None):
 SUMMARY_COLS = ["ls_r2", "nnls_r2", "ls_cos", "nnls_cos", "ls_rres", "nnls_rres", "ls_rho_e", "nnls_rho_e",
                 "cos_ge", "cos_gc", "cos_gsum", "cos_gpix", "cos_grand", "cos_gsum_signscr", "cos_gsum_wrong",
                 "r2_ls_random2", "r2_ls_signscr", "r2_ls_wrong", "r2_nnls_wrong", "r2_pix", "r2_gsum",
-                "r2_ls_e_c_pix"]
+                "r2_ls_e_c_pix", "coloc_absv_pc", "coloc_absv_gm", "coloc_absv_absgsum", "coloc_absv_pc_shuffled",
+                "coloc_absv_gm_shuffled", "coloc_absv_const"]
 
 
 def summarise(df, n_boot, seed):

@@ -80,7 +80,9 @@ class TrainConfig:
     at_alpha: float = 2 / 255
     at_steps: int = 7
     at_random_start: bool = True
-    at_eps_warmup_epochs: int = 5   # eps (and alpha) ramped linearly to at_eps over the first 5 epochs
+    at_epochs: int = 25
+    at_clean_epochs: int = 3        # eps = 0 (plain CE) for the first 3 epochs: from-scratch AT stalled at chance
+    at_eps_ramp_epochs: int = 6     # then eps (and alpha) ramp linearly to at_eps over 6 epochs, full eps after
     at_attack_mode: str = "PGD examples generated with the model in eval mode (BN running statistics)"
     # PAG-like training (clean images only)
     pag_lambda: float = 1.0
@@ -134,6 +136,7 @@ def quick_config():
     c = Config()
     c.data.n_train, c.data.n_test, c.data.n_test_aligned, c.data.n_proto = 300, 90, 60, 90
     c.train.epochs = 1
+    c.train.at_epochs, c.train.at_clean_epochs, c.train.at_eps_ramp_epochs = 2, 1, 1
     c.eval.bootstrap_resamples = 200
     c.eval.n_traj_per_class = 2
     c.eval.flow_images_per_class = 1

@@ -197,7 +197,8 @@ def force_analysis(ctx, names):
         d = per[per.split == s]
         for other in [m for m in names if m != "CE"]:
             a, b = d[d.model == other], d[d.model == "CE"]
-            for col in ["ls_r2", "nnls_r2", "ls_rho_e", "nnls_rho_e", "ls_cos", "cos_gsum", "cos_ge", "cos_gc"]:
+            for col in ["ls_r2", "nnls_r2", "ls_rho_e", "nnls_rho_e", "ls_cos", "cos_gsum", "cos_ge", "cos_gc",
+                        "r2_ls_wrong", "coloc_absv_pc", "coloc_absv_gm", "coloc_absv_absgsum"]:
                 r = paired_comparison(a[col].values, b[col].values, cfg.eval.bootstrap_resamples,
                                       cfg.eval.bootstrap_seed, other, "CE")
                 comps.append({"split": s, "metric": col, **r})
@@ -262,7 +263,7 @@ def stage2(ctx, retrain=False, names=("CE", "AT")):
                      f"{1 - s.ls_rho_e:.3f} | {s.r2_ls_wrong:.4f} | {s.r2_ls_random2:.5f} |")
     lines += ["", "Paired comparisons vs CE (mean difference [95% CI], Wilcoxon one-sided p for >):", ""]
     for _, c in comps.iterrows():
-        if c.metric in ("ls_r2", "nnls_r2", "ls_rho_e", "nnls_rho_e", "cos_gsum"):
+        if c.metric in ("ls_r2", "nnls_r2", "ls_rho_e", "nnls_rho_e", "cos_gsum", "r2_ls_wrong", "coloc_absv_pc"):
             lines.append(f"- [{c.split}] {c.comparison} {c.metric}: {fmt_ci(c.mean_diff, c.mean_diff_ci_lo, c.mean_diff_ci_hi, 4)}"
                          f"  frac>0={c.frac_a_gt_b:.2f}  p={c.wilcoxon_p_greater:.2e}")
     lines += ["", "Zero-parameter cosines (test_aligned):", ""]
@@ -270,6 +271,11 @@ def stage2(ctx, retrain=False, names=("CE", "AT")):
         lines.append(f"- {s.model}: cos(v,g_e)={s.cos_ge:.4f}, cos(v,g_c)={s.cos_gc:.4f}, cos(v,g_e+g_c)={s.cos_gsum:.4f}, "
                      f"cos(v,g_pixel)={s.cos_gpix:.4f}, wrong-proto={s.cos_gsum_wrong:.4f}, "
                      f"sign-scrambled={s.cos_gsum_signscr:.4f}, random={s.cos_grand:.4f}")
+    lines += ["", "Post-hoc sign-agnostic co-localisation cos(|v|, map) (test_aligned; shuffled = map of another image):", ""]
+    for _, s in summ[summ.split == "test_aligned"].iterrows():
+        lines.append(f"- {s.model}: |v|~PC {s.coloc_absv_pc:.3f} (shuffled {s.coloc_absv_pc_shuffled:.3f}), "
+                     f"|v|~GM {s.coloc_absv_gm:.3f} (shuffled {s.coloc_absv_gm_shuffled:.3f}), "
+                     f"|v|~|g_e+g_c| {s.coloc_absv_absgsum:.3f}, |v|~const {s.coloc_absv_const:.3f}")
     ctx.summary(2 if "PAG" not in names else 4, lines)
     return per, summ, comps, table
 
@@ -352,24 +358,34 @@ def stage3(ctx, names=None, tag=""):
         d = flow[flow.model == m]
         last = d[d.step == d.step.max()]
         lines.append(f"- {m}: mean cos on classifier path={d.cos_on_classifier_path.mean():.3f}, on energy path="
-                     f"{d.cos_on_energy_path.mean():.3f}; final normalised distance={last.norm_dist.mean():.3f} "
-                     f"(√2≈1.414 = orthogonal); f_y gain along energy path={(last.f_y_energy_path.values - d[d.step == 0].f_y_energy_path.values).mean():.3f}")
+                     f"{d.cos_on_energy_path.mean():.3f}; final displacement cosine={last.cos_displacement.mean():.3f} "
+                     f"(0 = orthogonal); f_y change along energy-descent path="
+                     f"{(last.f_y_energy_path.values - d[d.step == 0].f_y_energy_path.values).mean():.3f}; "
+                     f"E change along classifier-ascent path="
+                     f"{(last.E_classifier_path.values - d[d.step == 0].E_classifier_path.values).mean():.3f}")
     ctx.summary(f"3{tag}", lines)
 
 
 # ============================================================================================ STAGE 4
 def stage4(ctx, retrain=False):
-    comps_path = ctx.path("comparisons.csv")
-    if os.path.exists(comps_path):
-        c = pd.read_csv(comps_path)
-        r = c[(c.split == "test_aligned") & (c.metric == "ls_r2") & (c.comparison == "AT - CE")]
-        if len(r):
-            r = r.iloc[0]
-            gate = r.mean_diff_ci_lo > 0
-            print(f"STAGE-4 GATE (R²_AT > R²_CE with CI excluding 0): {'PASSED' if gate else 'NOT PASSED'} "
-                  f"(diff {r.mean_diff:.4f} [{r.mean_diff_ci_lo:.4f}, {r.mean_diff_ci_hi:.4f}]). "
-                  "PAG is trained regardless so that the requested comparison table is complete; interpret it as a "
-                  "supervised-alignment reference, not as discovery evidence.")
+    comps_path, fs_path = ctx.path("comparisons.csv"), ctx.path("force_summary.csv")
+    if os.path.exists(comps_path) and os.path.exists(fs_path):
+        c, fs = pd.read_csv(comps_path), pd.read_csv(fs_path)
+        c = c[(c.split == "test_aligned") & (c.comparison == "AT - CE")].set_index("metric")
+        at = fs[(fs.split == "test_aligned") & (fs.model == "AT")].iloc[0]
+        crit = {
+            "R²_LS(AT) > R²_LS(CE), CI excludes 0": c.loc["ls_r2", "mean_diff_ci_lo"] > 0,
+            "R²_NNLS(AT) > R²_NNLS(CE), CI excludes 0 (forces enter with the hypothesised + sign)":
+                c.loc["nnls_r2", "mean_diff_ci_lo"] > 0,
+            "cos(v_AT, g_e+g_c) > 0 (gradient descends the energy)": at.cos_gsum_lo > 0,
+            "true-class prototype beats wrong-class prototype for AT": at.ls_r2 > at.r2_ls_wrong,
+        }
+        print("STAGE-4 GATE ('only if results are promising'):")
+        for k, v in crit.items():
+            print(f"  [{'x' if v else ' '}] {k}")
+        print(f"  -> {'PROMISING' if all(crit.values()) else 'NOT PROMISING'}. PAG is trained anyway as a POSITIVE "
+              "CONTROL for the measurement pipeline (does the decomposition detect alignment when it is imposed?), "
+              "not as discovery evidence.")
     per, summ, comps, table = stage2(ctx, retrain, names=("CE", "AT", "PAG"))
     stage3(ctx, ["CE", "AT", "PAG"], tag="_with_PAG")
 

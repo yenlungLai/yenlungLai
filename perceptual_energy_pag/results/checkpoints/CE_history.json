@@ -1,0 +1,242 @@
+{
+  "history": [
+    {
+      "epoch": 1,
+      "time_s": 20.7,
+      "loss": 1.0921399116516113,
+      "acc": 0.3787109375
+    },
+    {
+      "epoch": 2,
+      "time_s": 17.5,
+      "loss": 1.0311621144413947,
+      "acc": 0.533984375
+    },
+    {
+      "epoch": 3,
+      "time_s": 18.1,
+      "loss": 0.8716908976435661,
+      "acc": 0.680078125
+    },
+    {
+      "epoch": 4,
+      "time_s": 17.1,
+      "loss": 0.6753640398383141,
+      "acc": 0.7625
+    },
+    {
+      "epoch": 5,
+      "time_s": 19.0,
+      "loss": 0.5284623354673386,
+      "acc": 0.868359375
+    },
+    {
+      "epoch": 6,
+      "time_s": 18.8,
+      "loss": 0.4298683971166611,
+      "acc": 0.929296875
+    },
+    {
+      "epoch": 7,
+      "time_s": 17.8,
+      "loss": 0.3596956551074982,
+      "acc": 0.95
+    },
+    {
+      "epoch": 8,
+      "time_s": 17.6,
+      "loss": 0.3147273659706116,
+      "acc": 0.9595703125
+    },
+    {
+      "epoch": 9,
+      "time_s": 16.3,
+      "loss": 0.26213008016347883,
+      "acc": 0.9697265625
+    },
+    {
+      "epoch": 10,
+      "time_s": 17.4,
+      "loss": 0.24375546239316465,
+      "acc": 0.9666015625
+    },
+    {
+      "epoch": 11,
+      "time_s": 16.9,
+      "loss": 0.18216433487832545,
+      "acc": 0.982421875
+    },
+    {
+      "epoch": 12,
+      "time_s": 17.4,
+      "loss": 0.18148512691259383,
+      "acc": 0.98203125
+    },
+    {
+      "epoch": 13,
+      "time_s": 15.8,
+      "loss": 0.1421158781275153,
+      "acc": 0.987109375
+    },
+    {
+      "epoch": 14,
+      "time_s": 16.2,
+      "loss": 0.13104776665568352,
+      "acc": 0.98984375
+    },
+    {
+      "epoch": 15,
+      "time_s": 16.8,
+      "loss": 0.1244682777673006,
+      "acc": 0.990234375
+    },
+    {
+      "epoch": 16,
+      "time_s": 17.8,
+      "loss": 0.11523541100323201,
+      "acc": 0.991015625
+    },
+    {
+      "epoch": 17,
+      "time_s": 16.7,
+      "loss": 0.10911316778510809,
+      "acc": 0.9908203125
+    },
+    {
+      "epoch": 18,
+      "time_s": 17.5,
+      "loss": 0.10510231871157885,
+      "acc": 0.9953125
+    },
+    {
+      "epoch": 19,
+      "time_s": 17.8,
+      "loss": 0.1042868722230196,
+      "acc": 0.9958984375
+    },
+    {
+      "epoch": 20,
+      "time_s": 16.7,
+      "loss": 0.10187742318958044,
+      "acc": 0.9955078125
+    }
+  ],
+  "meta": {
+    "name": "CE",
+    "config": {
+      "data": {
+        "image_size": 64,
+        "n_train": 5000,
+        "n_test": 1000,
+        "n_test_aligned": 600,
+        "n_proto": 900,
+        "seed_train": 1001,
+        "seed_test": 1002,
+        "seed_test_aligned": 1003,
+        "seed_proto": 1004,
+        "size_range": [
+          8.0,
+          13.0
+        ],
+        "center_range": [
+          24.0,
+          40.0
+        ],
+        "aligned_center": 31.5,
+        "aligned_center_jitter": 1.5,
+        "aligned_rotation_jitter": 8.0,
+        "foreground_range": [
+          0.5,
+          0.72
+        ],
+        "background_range": [
+          0.22,
+          0.42
+        ],
+        "contrast_range": [
+          0.75,
+          1.25
+        ],
+        "brightness_range": [
+          -0.06,
+          0.06
+        ],
+        "noise_range": [
+          0.0,
+          0.03
+        ],
+        "texture_strength_range": [
+          0.0,
+          0.06
+        ],
+        "texture_freq_range": [
+          0.08,
+          0.2
+        ]
+      },
+      "pc": {
+        "nscale": 4,
+        "norient": 6,
+        "min_wavelength": 3.0,
+        "mult": 2.1,
+        "sigma_onf": 0.55,
+        "d_theta_on_sigma": 1.2,
+        "k": 2.0,
+        "cutoff": 0.5,
+        "g": 10.0,
+        "eps": 0.0001,
+        "softplus_beta_rel": 10.0,
+        "abs_delta": 0.0001,
+        "lowpass_cutoff": 0.45,
+        "lowpass_order": 15
+      },
+      "gm": {
+        "eps": 1e-06,
+        "sobel_scale": 0.125,
+        "padding": "replicate"
+      },
+      "train": {
+        "arch": "SmallCNN: fixed input affine (x-0.345)/0.107 -> [conv3x3-BN-ReLU]x2(16,32) -> maxpool2 -> conv3x3-BN-ReLU(64) -> maxpool2 -> conv3x3-BN-ReLU(64) -> global average pool -> linear(3)",
+        "optimizer": "Adam",
+        "lr": 0.001,
+        "weight_decay": 0.0,
+        "batch_size": 128,
+        "epochs": 20,
+        "lr_schedule": "cosine",
+        "model_seed": 0,
+        "at_eps": 0.03137254901960784,
+        "at_alpha": 0.00784313725490196,
+        "at_steps": 7,
+        "at_random_start": true,
+        "at_eps_warmup_epochs": 5,
+        "at_attack_mode": "PGD examples generated with the model in eval mode (BN running statistics)",
+        "pag_lambda": 1.0,
+        "pag_target": "-(grad E_edge + grad E_contrast) wrt x, class-mean (centred/aligned) prototypes of TRUE class"
+      },
+      "eval": {
+        "pgd_eps": 0.03137254901960784,
+        "pgd_alpha": 0.00784313725490196,
+        "pgd_steps": 20,
+        "pgd_random_start": true,
+        "strong_pgd_eps": [
+          0.01568627450980392,
+          0.03137254901960784,
+          0.06274509803921569
+        ],
+        "strong_pgd_steps": 50,
+        "bootstrap_resamples": 10000,
+        "bootstrap_seed": 7,
+        "control_seed": 11,
+        "n_traj_per_class": 30,
+        "traj_steps": 11,
+        "flow_images_per_class": 4,
+        "flow_steps": 40,
+        "flow_eta": 0.1
+      },
+      "global_seed": 0,
+      "num_threads": 4,
+      "preprocessing": "grayscale float32 in [0,1], 64x64, no augmentation; images rendered from generative factors then clipped to [0,1]; inside the model a FIXED affine (x-0.345)/0.107 (training-set mean/std). Attacks, forces and gradients are all taken w.r.t. the [0,1] image. Per-image standardisation was rejected because it hard-codes contrast/offset invariance."
+    },
+    "train_time_s": 351.0
+  }
+}

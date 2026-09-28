@@ -202,16 +202,20 @@ def fig_potential(traj_df, pooled, path):
     fig, axes = plt.subplots(2, len(TRAJECTORY_FACTORS), figsize=(2.3 * len(TRAJECTORY_FACTORS), 5.2))
     for j, fac in enumerate(TRAJECTORY_FACTORS):
         d = traj_df[traj_df.factor == fac]
-        # z-score within each (model, base) trajectory so logits and energies share one axis
+        # z-score within each (model, base) trajectory so logits and energies share one axis; a trajectory whose
+        # values are constant up to float noise (std < 1e-3 |mean|) is drawn as 0 instead of amplified noise
+        def z(df, col):
+            g = df.groupby("base_index")[col]
+            sd, mu = g.transform("std"), g.transform("mean")
+            flat = sd < 1e-3 * mu.abs() + 1e-12
+            return ((df[col] - mu) / sd.where(~flat, 1.0)).where(~flat, 0.0)
         for m in models:
             dm = d[d.model == m].copy()
-            g = dm.groupby("base_index")
-            dm["zf"] = (dm.f_y - g.f_y.transform("mean")) / (g.f_y.transform("std") + 1e-9)
+            dm["zf"] = z(dm, "f_y")
             mean = dm.groupby("t").zf.mean()
             axes[0, j].plot(mean.index, mean.values, color=MODEL_COLORS[m], label=f"f_y {m}")
         de = d[d.model == models[0]].copy()
-        g = de.groupby("base_index")
-        de["zE"] = -(de.E_total - g.E_total.transform("mean")) / (g.E_total.transform("std") + 1e-9)
+        de["zE"] = -z(de, "E_total")
         me = de.groupby("t").zE.mean()
         axes[0, j].plot(me.index, me.values, color=INK, ls="--", lw=1.5, label="-E_y")
         axes[0, j].set_title(fac)
@@ -265,14 +269,14 @@ def fig_trajectories(flow_df, path):
     fig, axes = plt.subplots(1, 3, figsize=(11, 3.3))
     for m in models:
         d = flow_df[flow_df.model == m].groupby("step")
-        for ax, col in zip(axes, ["cos_on_classifier_path", "cos_on_energy_path", "norm_dist"]):
+        for ax, col in zip(axes, ["cos_on_classifier_path", "cos_on_energy_path", "cos_displacement"]):
             mu, sd = d[col].mean(), d[col].std()
             ax.plot(mu.index, mu.values, color=MODEL_COLORS[m], label=m)
             ax.fill_between(mu.index, mu - sd, mu + sd, color=MODEL_COLORS[m], alpha=0.12, linewidth=0)
     axes[0].set_title("cos(∇f_y, -∇E_y) along classifier-ascent path")
     axes[1].set_title("cos(∇f_y, -∇E_y) along energy-descent path")
-    axes[2].set_title("||x^f_t - x^E_t|| / (η t)\n0 identical, √2 orthogonal, 2 opposite")
-    axes[2].axhline(np.sqrt(2), color=INK2, ls=":", lw=1)
+    axes[2].set_title("cos(x^f_t - x_0, x^E_t - x_0)\n1 same direction, 0 orthogonal, -1 opposite")
+    axes[2].axhline(0, color=INK2, lw=0.8)
     for ax in axes:
         ax.set_xlabel("step t")
     axes[0].axhline(0, color=INK2, lw=0.8)
